@@ -32,12 +32,12 @@ fn create_inner(
         let ty = &ident_field.ty;
 
         let input_ty = if is_option_ident {
-            quote!(::darling::export::Option<::darling::export::syn::Ident>)
+            quote!(_darling::export::Option<_darling::export::syn::Ident>)
         } else {
-            quote!(::darling::export::syn::Ident)
+            quote!(_darling::export::syn::Ident)
         };
         quote::quote! {
-            #ident: ::darling::export::identity::<fn(#input_ty) -> ::darling::Result<#ty>>(#callable)(#input)?,
+            #ident: _darling::export::identity::<fn(#input_ty) -> _darling::Result<#ty>>(#callable)(#input)?,
         }
     } else {
         quote::quote! {
