@@ -7,7 +7,7 @@ use crate::codegen::ForwardAttrs;
 use crate::options::{
     Core, DefaultExpression, ForwardAttrsFilter, ForwardedField, ParseAttribute, ParseData,
 };
-use crate::util::{IdentField, PathList};
+use crate::util::PathList;
 use crate::{Error, FromField, FromMeta, Result};
 
 /// Reusable base for `FromDeriveInput`, `FromVariant`, `FromField`, and other top-level
@@ -15,7 +15,7 @@ use crate::{Error, FromField, FromMeta, Result};
 #[derive(Debug, Clone)]
 pub struct OuterFrom {
     /// The field on the target struct which should receive the type identifier, if any.
-    pub ident: Option<IdentField>,
+    pub ident: Option<ForwardedField>,
 
     /// The field on the target struct which should receive the type attributes, if any.
     pub attrs: Option<ForwardedField>,
@@ -80,18 +80,7 @@ impl ParseData for OuterFrom {
     fn parse_field(&mut self, field: &Field) -> Result<()> {
         match field.ident.as_ref().map(|v| v.to_string()).as_deref() {
             Some("ident") => {
-                self.ident = field
-                    .ident
-                    .clone()
-                    .map(|ident| {
-                        IdentField {
-                            ident,
-                            ty: field.ty.clone(),
-                            with: None,
-                        }
-                        .parse_attributes(&field.attrs)
-                    })
-                    .transpose()?;
+                self.ident = ForwardedField::from_field(field).map(Some)?;
                 Ok(())
             }
             Some("attrs") => {
