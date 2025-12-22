@@ -20,7 +20,7 @@ use syn::Ident;
 ///
 /// #[derive(FromDeriveInput)]
 /// struct Input {
-///     data: darling_core::ast::Data<darling_core::util::Ignored, Field>,
+///     data: darling::ast::Data<darling_core::util::Ignored, Field>,
 /// }
 ///
 /// let input = Input::from_derive_input(&parse_quote! {
