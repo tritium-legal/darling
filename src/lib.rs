@@ -33,6 +33,8 @@
 //!   This takes either a path or a closure whose signature matches `FromMeta::from_none`.
 //! * **Generate `syn::parse::Parse` impl**: When deriving `FromMeta`, add `#[darling(derive_syn_parse)]` to also generate an impl
 //!   of the `Parse` trait.
+//! * **Renamed crate**: You can use `#[darling(crate = ...)]` to specify a path to the `darling` crate
+//!   instance to use when referring to `darling` from generated code.
 //!
 //! ## Forwarded Fields
 //! All derivable traits except `FromMeta` support forwarding some fields from the input AST to the derived struct.
@@ -48,7 +50,7 @@
 //! |`ident`|`syn::Ident`|The identifier of the passed-in type|
 //! |`vis`|`syn::Visibility`|The visibility of the passed-in type|
 //! |`generics`|`T: darling::FromGenerics`|The generics of the passed-in type. This can be `syn::Generics`, `darling::ast::Generics`, or any compatible type.|
-//! |`data` (or anything, using `#[darling(with = ...)]`)|`darling::ast::Data`|The body of the passed-in type|
+//! |`data`|`darling::ast::Data` (or anything that implements `TryFrom<&syn::Data, Error=darling::Error>`, or anything using `#[darling(with = ...)]`)|The body of the passed-in type|
 //! |`attrs`|`Vec<syn::Attribute>` (or anything, using `#[darling(with = ...)]`)|The forwarded attributes from the passed in type. These are controlled using the `forward_attrs` attribute.|
 //!
 //! ### `FromField`
@@ -105,7 +107,7 @@ pub use darling_core::ToTokens;
 /// of the referenced types.
 #[doc(hidden)]
 pub mod export {
-    pub use core::convert::{identity, From, Into};
+    pub use core::convert::{identity, From, Into, TryFrom};
     pub use core::default::Default;
     pub use core::iter::IntoIterator;
     pub use core::option::Option::{self, None, Some};
